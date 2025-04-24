@@ -17,12 +17,7 @@ anthropic = Anthropic()
 
 @observe(name="anthropic-completion", 
          capture_input=True, 
-         capture_output=True,
-         model_parameters={
-            "model": "claude-3-opus-20240229",
-            "max_tokens": 1000,
-            "temperature": 0.7
-         })
+         capture_output=True)
 def generate_with_claude(prompt):
     """Generate text using Anthropic's Claude model."""
     response = anthropic.messages.create(
@@ -37,11 +32,17 @@ def generate_with_claude(prompt):
     # Manually add usage data to the current observation
     if hasattr(response, "usage"):
         langfuse_context.update_current_observation(
-            usage={
+            metadata={
+                "model": "claude-3-opus-20240229",
                 "prompt_tokens": getattr(response.usage, "input_tokens", 0),
                 "completion_tokens": getattr(response.usage, "output_tokens", 0),
                 "total_tokens": getattr(response.usage, "input_tokens", 0) + getattr(response.usage, "output_tokens", 0)
             }
+        )
+    else:
+        # Add at least the model information
+        langfuse_context.update_current_observation(
+            metadata={"model": "claude-3-opus-20240229"}
         )
     
     return response.content[0].text

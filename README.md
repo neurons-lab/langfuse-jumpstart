@@ -1,114 +1,74 @@
-# Langfuse Examples
+# Langfuse Tracing - Decorator Quickstart
 
-This repository contains examples of integrating Langfuse tracing into LLM applications using different models and frameworks.
+This example demonstrates how to use Langfuse's decorator approach to trace LLM calls in a Python application.
 
 ## Setup
 
-1. Install the required dependencies:
-   ```bash
-   pip install langfuse openai anthropic boto3 python-dotenv langchain langchain_openai
-   ```
+1. Install the required packages:
 
-2. Copy the `.env.example` file to `.env` and fill in your API keys:
-   ```bash
-   cp .env.example .env
-   ```
-
-3. Edit the `.env` file with your Langfuse and model provider API keys.
-
-## Examples
-
-### 1. OpenAI Integration
-
-The `langfuse_openai_example.py` file demonstrates how to use Langfuse with the OpenAI API.
-
-**Features:**
-- Automatic tracing of OpenAI API calls
-- User and session tracking
-- Trace scoring
-
-**Run the example:**
 ```bash
-python langfuse_openai_example.py
+pip install langfuse python-dotenv openai
 ```
 
-### 2. Anthropic Integration
+2. Copy `.env.example` to `.env` and fill in your API keys:
 
-The `langfuse_anthropic_example.py` file shows how to integrate Langfuse with Anthropic's Claude models.
-
-**Features:**
-- Manual usage tracking for Anthropic API calls
-- Nested spans for complex workflows
-- User and session context
-
-**Run the example:**
 ```bash
-python langfuse_anthropic_example.py
+cp .env.example .env
 ```
 
-### 3. AWS Bedrock Integration
+3. Open `.env` and add your Langfuse and OpenAI API keys:
+   - `LANGFUSE_SECRET_KEY` - from your Langfuse dashboard
+   - `LANGFUSE_PUBLIC_KEY` - from your Langfuse dashboard
+   - `OPENAI_API_KEY` - your OpenAI API key
 
-The `langfuse_bedrock_example.py` file demonstrates how to use Langfuse with AWS Bedrock models.
+## Running the Example
 
-**Features:**
-- Model comparison between Claude and Titan models
-- Parallel execution tracking
-- Performance scoring
+Run the example with:
 
-**Run the example:**
 ```bash
-python langfuse_bedrock_example.py
+python langfuse_quickstart.py
 ```
 
-### 4. LangChain Integration
-
-The `langfuse_langchain_example.py` file shows how to use Langfuse with LangChain.
-
-**Features:**
-- Integration with LangChain callbacks
-- Tracking of question-answering chains
-- Simulated retrieval system
-
-**Run the example:**
-```bash
-python langfuse_langchain_example.py
-```
+This will:
+1. Generate a short story about space exploration
+2. Create a summary of the story
+3. Classify the sentiment of the summary
+4. Log all of these steps to Langfuse with automatic tracing
 
 ## How It Works
 
-All examples use Langfuse's `@observe()` decorator, which automatically captures:
+The code uses Langfuse's `@observe()` decorator to automatically trace function calls:
 
-- Function inputs and outputs
-- Execution time
-- Nested spans for tracing complex workflows
-- LLM-specific parameters and usage statistics
+```python
+from langfuse.decorators import observe
 
-The decorator approach makes it easy to add observability to your code with minimal changes.
+@observe()
+def my_function():
+    # Function code here
+    pass
+```
+
+Key features demonstrated:
+
+1. **Nested Tracing**: The main function calls other traced functions, creating a hierarchical trace
+2. **OpenAI Integration**: Using `from langfuse.openai import openai` for automatic tracing of OpenAI calls
+3. **User & Session Tracking**: Setting user and session IDs for analytics
+4. **Scoring**: Adding evaluation scores to traces
+5. **Proper Flushing**: Ensuring all events are sent to Langfuse
 
 ## Viewing Traces
 
-After running any example, you can view the traces in the Langfuse UI:
+After running the example, visit your [Langfuse Dashboard](https://cloud.langfuse.com) to see the traces. You'll find:
 
-1. Go to [https://cloud.langfuse.com](https://cloud.langfuse.com) (or your self-hosted instance)
-2. Navigate to the Traces section
-3. Find your trace by name, user ID, or session ID
-
-In the UI, you can see the full execution flow, model parameters, inputs/outputs, and performance metrics.
-
-## Decorator Features
-
-The `@observe()` decorator offers several features:
-
-- **Automatic nesting**: Traces maintain their hierarchy when decorated functions call each other
-- **OpenAI integration**: Special handling for OpenAI calls to capture model, tokens, and costs
-- **Context management**: The `langfuse_context` module provides access to the current trace
-- **User and session tracking**: Easy association of traces with users and sessions
-- **Scoring**: Add subjective scores to evaluate trace quality
-- **Proper flushing**: Ensures all events are sent to Langfuse before program exit
+- A hierarchical view of the main function and its nested calls
+- Detailed information about each OpenAI API call
+- Input/output pairs for each function
+- Timing information
+- The evaluation score
 
 ## Next Steps
 
-1. Explore more advanced Langfuse features like custom observations and metrics
-2. Integrate Langfuse into your own LLM applications
-3. Set up automated scoring and feedback collection
-4. Use Langfuse for A/B testing different prompts and models 
+- Add more functions to your trace
+- Integrate with other frameworks like LangChain or LlamaIndex
+- Add custom metadata to your traces
+- Set up evaluations and scoring for quality monitoring 
